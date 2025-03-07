@@ -5,6 +5,7 @@ export files="appName.py bytesRead.py collScans.py cpuc.py \
               ns.py nsCount.py nsCountUser.py nsIndexes.py phead.py prettyJson.py queryHash.py"
 
 
+
 for file in $files; do
     pyinstaller --onefile $file
 done

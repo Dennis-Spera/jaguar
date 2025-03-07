@@ -1,1 +1,0 @@
-# Jaguar for MongoDB

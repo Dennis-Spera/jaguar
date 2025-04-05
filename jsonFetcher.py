@@ -4,14 +4,7 @@
 
  File: jsonFetcher.py
  Author: Dennis Spera
- Date: 2024-06-24
- Description: 
-  1.) Extract json from mongod.log on stdin based on date ranges. This script uses pipeling.
-
- Change Log:
-  1. 2024-06-24 - Initial
-  2. 2024-07-13 - Add additional error checking and global help fucntion
-
+ 
 """
 
 import sys

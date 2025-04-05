@@ -19,8 +19,17 @@ end_d_t_fmt = None
 max_input_length = 14
 min_input_length = 8
 
+def validate_input(func)-> callable:
+    def wrapper(*args, **kwargs):
+        if not b or not e:
+            sys.stderr.write("Both beginning and ending timestamps must be provided.\n")
+            printHelp()
+            sys.exit(0)
+        return func(*args, **kwargs)
+    return wrapper
 
-def is_json(json):
+@validate_input
+def is_json(json)-> bool:
     try:
         j.loads(json)
     except ValueError:
@@ -28,7 +37,7 @@ def is_json(json):
     return True
 
 
-def printHelp():
+def printHelp()-> None:
     sys.stderr.write(
         'enter a valid beginning {b} date and end {e} to extract from logs' +
         "\n")

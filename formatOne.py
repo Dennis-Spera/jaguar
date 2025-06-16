@@ -57,16 +57,46 @@ for json in jsonFile:
         except: pass
         try: print("{:<20} {:<1} {:>0}".format('docsExamined ', '=', json['attr']['docsExamined']))
         except: pass
+        
         try: print("{:<20} {:<1} {:>0}".format('queryHash ', '=', json['attr']['queryHash']))
         except: pass
+        try: print("{:<20} {:<1} {:>0}".format('queryShapeHash ', '=', json['attr']['queryShapeHash']))
+        except: pass
+
+        try: print("{:<20} {:<1} {:>0}".format('planningTimeMicros ', '=', json['attr']['planningTimeMicros']))
+        except: pass
+        try: print("{:<20} {:<1} {:>0}".format('queryFramework ', '=', json['attr']['queryFramework']))
+        except: pass
+
+        try: print("{:<20} {:<1} {:>0}".format('locks ', '=', str(json['attr']['locks'])))
+        except: pass        
+
+        try: print("{:<20} {:<1} {:>0}".format('reslen ', '=', str(json['attr']['reslen'])))
+        except: pass        
+
+        try: print("{:<20} {:<1} {:>0}".format('readConcern ', '=', str(json['attr']['readConcern'])))
+        except: pass  
+        try: print("{:<20} {:<1} {:>0}".format('writeConcern ', '=', str(json['attr']['writeConcern'])))
+        except: pass
+
+        try: print("{:<20} {:<1} {:>0}".format('$readPreference ', '=', str(json['attr']['$readPreference'])))
+        except: pass  
+        try: print("{:<20} {:<1} {:>0}".format('$writePreference ', '=', str(json['attr']['$writePreference'])))
+        except: pass
+
         try: print("{:<20} {:<1} {:>0}".format('numYields ', '=', json['attr']['numYields']))
         except: pass
         try: print("{:<20} {:<1} {:>0}".format('nreturned  ', '=', json['attr']['nreturned']))
         except: pass 
         try: print("{:<20} {:<1} {:>0}".format('durationMillis ', '=', json['attr']['durationMillis']))       
         except: pass 
-        try: print("{:<20} {:<1} {:>0}".format('cpuNanos', '=', json['attr']['cpuNanos']))       
+
+        try: 
+          seconds = round(int(json['attr']['cpuNanos']) / 1000000000,2)
+          print("{:<20} {:<1} {:>0}".format('cpuNanos', '=', str(json['attr']['cpuNanos']) + " (" + str(seconds) + " seconds)"))       
         except: pass 
+
+
         try: print("{:<20} {:<1} {:>0}".format('remote ', '=', json['attr']['remote']))
         except: pass 
         try: print("{:<20} {:<1} {:>0}".format('bytesRead ', '=', json['attr']['storage']['data']['bytesRead']))

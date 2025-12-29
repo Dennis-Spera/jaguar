@@ -46,6 +46,8 @@ for json in jsonFile:
         except: pass
         try: print("{:<20} {:<1} {:>0}".format('command ', '=', str(json['attr']['command'])))
         except: pass
+        try: print("{:<20} {:<1} {:>0}".format('originatingCommand ', '=', str(json['attr']['originatingCommand'])))
+        except: pass
 
         print("\n")
 
@@ -63,6 +65,10 @@ for json in jsonFile:
         try: print("{:<20} {:<1} {:>0}".format('queryShapeHash ', '=', json['attr']['queryShapeHash']))
         except: pass
 
+        try: print("{:<20} {:<1} {:>0}".format('hasSortStage ', '=', json['attr']['hasSortStage']))
+        except: pass
+
+
         try: print("{:<20} {:<1} {:>0}".format('planningTimeMicros ', '=', json['attr']['planningTimeMicros']))
         except: pass
         try: print("{:<20} {:<1} {:>0}".format('queryFramework ', '=', json['attr']['queryFramework']))
@@ -73,6 +79,11 @@ for json in jsonFile:
 
         try: print("{:<20} {:<1} {:>0}".format('reslen ', '=', str(json['attr']['reslen'])))
         except: pass        
+
+        try: print("{:<20} {:<1} {:>0}".format('nBatches ', '=', str(json['attr']['nBatches'])))
+        except: pass   
+
+
 
         try: print("{:<20} {:<1} {:>0}".format('readConcern ', '=', str(json['attr']['readConcern'])))
         except: pass  

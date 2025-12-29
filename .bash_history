@@ -18,3 +18,9 @@ git push origin main
 git add -A
 git commit -m "04-04-2025-03"
 git push origin main
+ls -1
+pwd
+get add -A
+git add -A
+git commit -m "06-15-2025-01"
+git push origin main

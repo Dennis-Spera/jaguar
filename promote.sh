@@ -6,14 +6,12 @@ read -p "Enter the directory to copy files to: " target_dir
 # Check if the directory exists
 if [ -d "$target_dir" ]; then
     echo "Directory exists. Proceeding with file copy..."
-    # List of filenames to copy
     
-    files="appName bytesRead collScans cpuc \
-           docsExamined drivers formatOne jsonFetcher keysExamined millis\
-           ns nsCount nsCountUser nsIndexes phead prettyJson queryHash"       
-
     # Directory to copy files from
     source_dir="dist"
+    
+    # Auto-populate files from source directory
+    files=$(ls -1 "$source_dir" 2>/dev/null | tr '\n' ' ')
 
     # Copy files from source_dir to target_dir
     for file in $files; do

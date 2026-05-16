@@ -19,16 +19,9 @@
   1. Not defined
 """
 
-import json, sys
-import json as j
+import json
+import sys
 from commandlines import Command as cmd
-
-def is_json(json):
-    try:
-        j.loads(json)
-    except ValueError:
-        return False
-    return True
 
 ge = int()
 c = cmd()
@@ -42,35 +35,41 @@ try:
 except:
  ctx = '_not_selected_'
 
-jsonFile = list()
-unique = list()
+millis = list()
+unique = set()
+use_unique = c.contains_switches('u')
 
 for line in sys.stdin:
-    if is_json(line):
-       jsonFile.append( j.loads(line))
+    try:
+        payload = json.loads(line)
+    except ValueError:
+        continue
+
+    if payload['c'] != ctx and ctx != '_not_selected_':
+        continue
+
+    try:
+        duration = int(payload['attr']['durationMillis'])
+    except:
+        continue
+
+    if duration < ge:
+        continue
+
+    if use_unique:
+        try:
+            query_hash = payload['attr']['queryHash']
+        except:
+            continue
+
+        if query_hash in unique:
+            continue
+
+        unique.add(query_hash)
+
+    millis.append({'json': json.dumps(payload), 'milli': duration})
+
 sys.stdin.close()
-
-millis = list()
-for json in jsonFile:
-    if json['c'] == ctx or ctx == '_not_selected_':
-       try:
-        if int(json['attr']['durationMillis']) >= ge:
-           millis.append({'json':j.dumps(json),'milli':json['attr']['durationMillis']})
-       except:
-        pass
-       
-deduped = list()
-if c.contains_switches('u'):
-   for element in millis:
-       try:
-         _json = j.loads(element['json'])
-
-         if _json['attr']['queryHash'] not in unique:
-            unique.append(_json['attr']['queryHash'])
-            deduped.append({'json':element['json'],'milli':element['milli']})
-       except:
-         pass 
-   millis = deduped             
 
 try:       
  sorted_list = sorted(millis, key=lambda x: x['milli'], reverse=True)

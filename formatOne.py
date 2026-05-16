@@ -65,6 +65,9 @@ for json in jsonFile:
         try: print("{:<20} {:<1} {:>0}".format('queryShapeHash ', '=', json['attr']['queryShapeHash']))
         except: pass
 
+        try: print("{:<20} {:<1} {:>0}".format('appName ', '=', json['attr']['appName']))
+        except: pass
+
         try: print("{:<20} {:<1} {:>0}".format('hasSortStage ', '=', json['attr']['hasSortStage']))
         except: pass
 

@@ -18,13 +18,17 @@ cd jaguar
 
 # 3. Create and activate venv
 uv venv .venv
-source .venv/bin/activate.fish   # or .venv/bin/activate for bash
+source .venv/bin/activate.fish #fish
+or 
+source .venv/bin/activate #bash
 
 # 4. Install dependencies
 uv add commandlines>=0.4.1 tabulate>=0.10.0
 
 # 5. Register aliases
 source alias.fish
+or
+source alias.bash
 
 # 6. Try it out
 cat mongodb.log | millis -ge 100 | phead -r 10

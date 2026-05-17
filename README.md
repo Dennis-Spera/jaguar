@@ -21,7 +21,7 @@ uv venv .venv
 source .venv/bin/activate.fish   # or .venv/bin/activate for bash
 
 # 4. Install dependencies
-uv pip install -e .
+uv add commandlines>=0.4.1 tabulate>=0.10.0
 
 # 5. Register aliases
 source alias.fish
@@ -89,7 +89,7 @@ The project dependencies are defined in `pyproject.toml`:
 Install them with `uv`:
 
 ```bash
-uv pip install -e .
+uv add commandlines>=0.4.1 tabulate>=0.10.0
 ```
 
 Or install directly from `pyproject.toml`:

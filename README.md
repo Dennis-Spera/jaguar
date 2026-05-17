@@ -2,7 +2,7 @@
 
 🔍 Making parsing of `mongodb.log` files simpler using a standard Linux pipeline.
 
-All tools accept piped stdin and are registered as shell aliases via `alias.fish`.
+All tools accept piped stdin and are registered as shell aliases via `alias.fish` or `alias.bash`.
 
 ---
 
@@ -208,7 +208,7 @@ cat mongodb.log | drivers
 ---
 
 ### 📋 `formatOne` → `formatOne.py`
-Concise single-line format of `mongod.log` entries on stdin.
+Present json in a more readable format from `mongod.log` entries on stdin.
 
 ```
 cat mongodb.log | formatOne

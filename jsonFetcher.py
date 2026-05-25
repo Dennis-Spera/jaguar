@@ -8,41 +8,87 @@
 
 import sys
 import json as j
-from datetime import datetime
-import re as regex
 from commandlines import Command as cmd
 
-b = str()
-e = str()
-start_d_t_fmt = None
-end_d_t_fmt = None
+b = ""
+e = ""
 max_input_length = 14
 min_input_length = 8
 
-def validate_input(func)-> callable:
+def validate_input(func) -> callable:
     def wrapper(*args, **kwargs):
         if not b or not e:
             sys.stderr.write("Both beginning and ending timestamps must be provided.\n")
             printHelp()
             sys.exit(0)
         return func(*args, **kwargs)
+
     return wrapper
 
+
 @validate_input
-def is_json(json)-> bool:
+def is_json(text) -> bool:
     try:
-        j.loads(json)
+        j.loads(text)
     except ValueError:
         return False
     return True
 
 
-def printHelp()-> None:
+def printHelp() -> None:
     sys.stderr.write(
-        'enter a valid beginning {b} date and end {e} to extract from logs' +
-        "\n")
+        'enter a valid beginning {b} date and end {e} to extract from logs' + "\n"
+    )
     sys.stderr.write(
-        'jsonFetcher -b YYYYMMDD[24HRMISS] -e YYYYMMDD[24HRMISS]' + "\n")
+        'jsonFetcher -b YYYYMMDD[24HRMISS] -e YYYYMMDD[24HRMISS]' + "\n"
+    )
+
+
+def normalize_bound(label: str, value: str) -> str:
+    if len(value) > max_input_length:
+        sys.stderr.write(
+            f'{label} timestamp exceeds timestamp length of {max_input_length}'
+        )
+        printHelp()
+        sys.exit(0)
+
+    if len(value) < min_input_length:
+        sys.stderr.write(
+            f'{label} timestamp less than timestamp length of {min_input_length}'
+        )
+        printHelp()
+        sys.exit(0)
+
+    try:
+        int(value)
+    except ValueError:
+        sys.stderr.write(f'{label} timestamp is an invalid data format')
+        printHelp()
+        sys.exit(0)
+
+    # Pad missing HHMMSS tail with zeros.
+    return value + ("0" * (max_input_length - len(value)))
+
+
+def iso_to_compact_14(iso_text: str) -> str | None:
+    # Expected examples:
+    # 2025-04-29T00:12:58.262+00:00
+    # 2026-03-24T11:07:47.233-04:00
+    if len(iso_text) < 19:
+        return None
+
+    # Fast positional extraction; avoids regex/datetime in hot path.
+    try:
+        return (
+            iso_text[0:4]
+            + iso_text[5:7]
+            + iso_text[8:10]
+            + iso_text[11:13]
+            + iso_text[14:16]
+            + iso_text[17:19]
+        )
+    except Exception:
+        return None
 
 
 try:
@@ -50,116 +96,40 @@ try:
 
     try:
         b = c.get_definition('b')
-        if len(b) > max_input_length:
-            sys.stderr.write(
-                'beginning timestamp exceeds beginning timesamp length of ' +
-                str(max_input_length))
-            printHelp()
-            sys.exit(0)
-        if len(b) < min_input_length:
-            sys.stderr.write(
-                'beginning timestamp less than beginning timesamp length of ' +
-                str(min_input_length))
-            printHelp()
-            sys.exit(0)
-
-        try:
-            test = int(b)
-        except:
-            sys.stderr.write('beginning timestamp is an invalid data format')
-            sys.exit(0)
-
-        padding = max_input_length - len(b)
-
-        if padding > 0:
-            for i in range(1, padding + 1, 1):
-                b = b + '0'
-
         e = c.get_definition('e')
-        if len(e) > max_input_length:
-            sys.stderr.write(
-                'ending timestamp exceeds ending timesamp length of ' +
-                str(max_input_length))
-            printHelp()
-            sys.exit(0)
-        if len(b) < min_input_length:
-            sys.stderr.write(
-                'ending timestamp less than ending timesamp length of ' +
-                str(min_input_length))
-            printHelp()
-            sys.exit(0)
-
-        try:
-            test = int(e)
-        except:
-            sys.stderr.write('end timestamp is an invalid data format')
-            printHelp()
-            sys.exit(0)
-
-        padding = max_input_length - len(e)
-
-        if padding > 0:
-            for i in range(1, padding + 1, 1):
-                e = e + '0'
-
-    except:
+        b = normalize_bound("beginning", b)
+        e = normalize_bound("ending", e)
+    except Exception:
         sys.stderr.write('error parsing input parameters')
         printHelp()
         sys.exit(0)
 
+    if b > e:
+        sys.stderr.write('beginning timestamp must be <= ending timestamp\n')
+        printHelp()
+        sys.exit(0)
+
     for line in sys.stdin:
-        if is_json(line):
+        text = line.strip()
+        if not text or not text.startswith("{"):
+            continue
 
-            d = j.loads(line)
-            dateT = d["t"]["$date"]
+        try:
+            d = j.loads(text)
+        except ValueError:
+            continue
 
-            match_object = regex.match(
-                r'(\d{4})([-])(\d{2})([-])(\d{2})([T])(\d{2})([:])(\d{2})([:])(\d{2})(.*)',
-                dateT)
-            d_t_fmt = datetime.strptime(match_object.group(1)+match_object.group(3)\
-                                       +match_object.group(5)\
-                                       +match_object.group(7)+match_object.group(9)
-                                       +match_object.group(11), '%Y%m%d%H%M%S')
+        try:
+            date_t = d["t"]["$date"]
+        except Exception:
+            continue
 
-            match_object = regex.match(
-                r'(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})', b)
+        compact = iso_to_compact_14(date_t)
+        if compact is None:
+            continue
 
-            try:
-                start_d_t_fmt = datetime.strptime(match_object.group(1)+match_object.group(2)\
-                                                             +match_object.group(3)\
-                                                             +match_object.group(4)+match_object.group(5)
-                                                             +match_object.group(6), '%Y%m%d%H%M%S')
-            except:
-                sys.stderr.write(
-                    'error converting start date-time to a datatime format')
-                printHelp()
-                sys.exit(0)
-
-            match_object = regex.match(
-                r'(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})', e)
-
-            try:
-                end_d_t_fmt = datetime.strptime(match_object.group(1)+match_object.group(2)\
-                                                             +match_object.group(3)\
-                                                             +match_object.group(4)+match_object.group(5)
-                                                             +match_object.group(6), '%Y%m%d%H%M%S')
-            except:
-                sys.stderr.write(
-                    'error converting end date-time to a datatime format')
-                printHelp()
-                sys.exit(0)
-
-            try:
-                if (start_d_t_fmt <= d_t_fmt) and (
-                        end_d_t_fmt
-                        >= d_t_fmt) and not regex.match(r'^$', line):
-                    print(line, end="")
-
-            except:
-                sys.stderr.write('error with begin-date and end-date format' +
-                                 "\n")
-                printHelp()
-                sys.exit(0)
+        if b <= compact <= e:
+            print(line, end="")
 
     sys.stdin.close()
 

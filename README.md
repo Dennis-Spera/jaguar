@@ -163,7 +163,44 @@ cat mongodb.log | collScans
 
 ---
 
-### 🎛️ `control` → `controlPrint.py`
+### 🔌 `connections` → `connections.py`
+Report connection activity from MongoDB logs:
+- total connections opened and closed
+- IP addresses with open/close counts
+- users with successful authentication counts and source IPs
+
+```
+cat mongodb.log | connections
+```
+
+---
+
+### 🧱 `connpool` → `connpool.py`
+Summarize all `CONNPOOL` component events from MongoDB logs.
+Report includes:
+- counts by message, context, event id, and hostAndPort
+- `error` value breakdown (for example pool expiration)
+- `numOpenConns` statistics overall and by host
+- host + message matrix for connection-pool behavior trends
+
+```
+cat mongodb.log | python connpool.py
+```
+
+---
+
+### 🚦 `startup` → `startup.py`
+Detect mongod startup/shutdown occurrences from log events and print JSON
+around each occurrence.
+Supports context window selection around each detected marker.
+
+```
+cat mongodb.log | startup
+```
+
+---
+
+### 🎛️ `control` → `control.py`
 Pretty-print `CONTROL` component log entries with structured field extraction.
 Handles: Process Details, Build Info, Operating System, Options, Replica Set config,
 Log Rotation, Session Cache failures, and a generic fallback for all other CONTROL messages.

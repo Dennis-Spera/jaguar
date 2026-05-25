@@ -45,9 +45,9 @@ for json in jsonFile:
 result = Counter(key for d in drivers for key in d)
 sorted_result = dict(sorted(result.items(), key=lambda x: x[1], reverse=True))
 
-print("{:>10}   {:<10}".format('Count', 'Driver'))
-print("{:>10}   {:<10}".format('-----', '----------------------'))
+print("| Count | driver |")
+print("| --- | --- |")
 
-for k,v in sorted_result.items():
-
-    print("{:>10}   {:<10}".format(v, k))
+for k, v in sorted_result.items():
+    safe_name = str(k).replace("|", "\\|")
+    print(f"| {v} | {safe_name} |")
